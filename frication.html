@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friction – A Necessary Evil</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rust: #C8622A;
+    --rust-light: #D97038;
+    --bone: #F0EDE6;
+    --dark: #111110;
+    --dark2: #141413;
+    --dark3: #0D0D0C;
+    --dark4: #0A0A09;
+    --border: #2E2E2C;
+    --border2: #1E1E1C;
+    --muted: #7A7972;
+    --muted2: #5A5A56;
+    --muted3: #4A4A46;
+    --muted4: #3A3A37;
+    --blue: #378ADD;
+    --green: #1D9E75;
+    --red: #E24B4A;
+    --amber: #BA7517;
+    --purple-bg: rgba(120,100,200,0.15);
+    --purple-text: #9A88E0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--bone);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(17,17,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 2.5rem;
+    display: flex; align-items: center; gap: 0; height: 48px;
+  }
+  .nav-brand {
+    font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--rust); font-weight: 500; margin-right: auto;
+  }
+  .nav-links { display: flex; gap: 0; }
+  .nav-links a {
+    padding: 0 16px; height: 48px; display: flex; align-items: center;
+    font-size: 12px; color: var(--muted); text-decoration: none;
+    letter-spacing: 0.04em; border-left: 0.5px solid var(--border);
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--bone); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 4rem 2.5rem 2.5rem;
+    border-bottom: 0.5px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 39px, #1A1A18 39px, #1A1A18 40px);
+    opacity: 0.4; pointer-events: none;
+  }
+  .eyebrow {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--rust); margin-bottom: 1rem; font-weight: 500;
+  }
+  .hero-title {
+    font-size: clamp(52px, 10vw, 104px);
+    font-weight: 700; line-height: 0.92; letter-spacing: -0.03em;
+    color: var(--bone); margin-bottom: 0.5rem; position: relative;
+  }
+  .hero-title span { color: var(--rust); }
+  .hero-subtitle {
+    font-size: 14px; color: var(--muted); margin-top: 1.2rem;
+    max-width: 480px; line-height: 1.7; letter-spacing: 0.01em;
+  }
+  .hero-meta {
+    display: flex; gap: 2.5rem; margin-top: 2rem;
+    padding-top: 1.5rem; border-top: 0.5px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .meta-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted2); }
+  .meta-val { font-size: 20px; font-weight: 500; color: var(--bone); }
+
+  /* ── SECTION WRAPPER ── */
+  section { border-bottom: 0.5px solid var(--border); }
+  .section-inner { padding: 2.5rem 2.5rem; }
+  .section-head {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted2); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .section-head::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
+
+  /* ── FRICTION LAB ── */
+  #lab .section-inner { background: var(--dark2); }
+  .drag-arena {
+    background: var(--dark3); border: 0.5px solid var(--border);
+    border-radius: 8px; padding: 1.5rem;
+  }
+  .surface-label { font-size: 11px; color: var(--muted2); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .surface-selector { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .surf-btn {
+    padding: 5px 14px; border: 0.5px solid var(--muted4); background: transparent;
+    color: var(--muted); font-size: 12px; border-radius: 4px; cursor: pointer;
+    transition: all 0.15s; font-family: inherit; letter-spacing: 0.04em;
+  }
+  .surf-btn.active { border-color: var(--rust); color: var(--rust); background: rgba(200,98,42,0.1); }
+  .surf-btn:hover:not(.active) { border-color: var(--muted2); color: #B0ADA6; }
+  .track-container { position: relative; height: 80px; margin-bottom: 1.5rem; }
+  .track-surface { position: absolute; bottom: 20px; left: 0; right: 0; height: 4px; background: var(--border); border-radius: 2px; }
+  .track-progress { height: 100%; background: var(--rust); border-radius: 2px; transition: width 0.05s linear; width: 0%; }
+  .block {
+    position: absolute; bottom: 24px; width: 44px; height: 32px;
+    background: #2C2C2A; border: 0.5px solid var(--muted3); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    transition: left 0.05s linear, box-shadow 0.1s; cursor: pointer; user-select: none;
+  }
+  .block.moving { box-shadow: 0 0 12px rgba(200,98,42,0.3); border-color: var(--rust); }
+  .heat-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .heat-label { font-size: 11px; color: var(--muted2); min-width: 80px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .heat-track { flex: 1; height: 6px; background: #1A1A18; border-radius: 3px; overflow: hidden; border: 0.5px solid var(--border); }
+  .heat-fill { height: 100%; border-radius: 3px; width: 0%; transition: width 0.1s; background: linear-gradient(90deg, #3A5A3A, #C8622A, #E04040); }
+  .heat-value { font-size: 12px; color: var(--rust); min-width: 42px; text-align: right; font-weight: 500; }
+  .force-readout { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 0.5rem; }
+  .readout-cell { background: var(--dark4); border: 0.5px solid #222220; border-radius: 4px; padding: 10px 12px; }
+  .readout-cell-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted3); margin-bottom: 4px; }
+  .readout-cell-val { font-size: 16px; font-weight: 500; color: var(--bone); }
+  .push-btn {
+    margin-top: 1rem; padding: 10px 24px; background: var(--rust); color: var(--bone);
+    border: none; border-radius: 4px; font-size: 13px; font-family: inherit;
+    cursor: pointer; letter-spacing: 0.06em; font-weight: 500; transition: all 0.15s;
+  }
+  .push-btn:hover { background: var(--rust-light); }
+  .push-btn:active { transform: scale(0.97); }
+  #status-msg { font-size: 11px; color: var(--muted2); margin-top: 0.75rem; letter-spacing: 0.06em; min-height: 16px; }
+
+  /* ── DOMAINS ── */
+  .domain-grid {
+    display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 1px; background: var(--border); border: 0.5px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+  }
+  .domain-card { background: #0F0F0E; padding: 1.5rem; cursor: pointer; transition: background 0.15s; }
+  .domain-card:hover, .domain-card.expanded { background: var(--dark2); }
+  .domain-icon { font-size: 22px; margin-bottom: 0.75rem; display: block; }
+  .domain-name { font-size: 14px; font-weight: 500; color: var(--bone); margin-bottom: 4px; }
+  .domain-mu { font-size: 11px; color: var(--rust); letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .domain-desc {
+    font-size: 12px; color: var(--muted2); line-height: 1.6;
+    max-height: 0; overflow: hidden; transition: max-height 0.3s, color 0.2s;
+  }
+  .domain-card.expanded .domain-desc { max-height: 200px; color: #8A8A82; }
+  .friction-bar { height: 3px; border-radius: 1.5px; background: #1A1A18; margin-top: 0.75rem; overflow: hidden; }
+  .friction-fill { height: 100%; border-radius: 1.5px; background: var(--rust); }
+
+  /* ── PARADOX ── */
+  .paradox-item {
+    display: grid; grid-template-columns: 28px 1fr 90px;
+    align-items: center; gap: 1rem; padding: 1rem 0;
+    border-bottom: 0.5px solid var(--border2);
+  }
+  .paradox-num { font-size: 11px; color: var(--muted4); font-weight: 500; }
+  .paradox-text { font-size: 13px; color: #8A8A82; line-height: 1.5; }
+  .paradox-text strong { color: #C0BDB6; font-weight: 500; }
+  .verdict {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 3px; text-align: center;
+  }
+  .verdict.evil { background: rgba(200,98,42,0.15); color: var(--rust); }
+  .verdict.good { background: rgba(63,130,80,0.15); color: #4A9E60; }
+  .verdict.both { background: var(--purple-bg); color: var(--purple-text); }
+
+  /* ── ML SECTION ── */
+  .ml-tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .ml-tab {
+    padding: 7px 16px; font-size: 12px; border-radius: 4px;
+    border: 0.5px solid var(--muted4); cursor: pointer; background: transparent;
+    color: var(--muted); font-family: inherit; transition: all 0.15s; letter-spacing: 0.04em;
+  }
+  .ml-tab.active { background: #1E1E1C; color: var(--bone); border-color: var(--muted2); }
+  .ml-tab:hover:not(.active) { border-color: var(--muted2); color: #B0ADA6; }
+
+  .ctrl-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 1rem; font-size: 13px; color: var(--muted); }
+  .ctrl-row label { display: flex; align-items: center; gap: 8px; }
+  .ctrl-row input[type=range] { width: 110px; accent-color: var(--rust); }
+  .ctrl-row .val { min-width: 36px; font-weight: 500; color: var(--bone); }
+  .reset-btn {
+    padding: 6px 14px; font-size: 12px; border: 0.5px solid var(--muted4);
+    background: transparent; color: var(--muted); border-radius: 4px;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { border-color: var(--muted2); color: var(--bone); }
+
+  .canvas-wrap { position: relative; width: 100%; height: 260px; }
+  canvas { display: block; width: 100% !important; height: 100% !important; }
+
+  .ml-legend { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 0.75rem; }
+  .leg-item { display: flex; align-items: center; gap: 6px; }
+  .leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .leg-dash { width: 22px; height: 2px; flex-shrink: 0; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 8px; margin-top: 1rem; }
+  .stat-card { background: #141413; border-radius: 4px; padding: 10px 14px; border: 0.5px solid var(--border); }
+  .stat-lbl { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted3); margin-bottom: 4px; }
+  .stat-val { font-size: 17px; font-weight: 500; color: var(--bone); }
+
+  .barrier-list { display: flex; flex-direction: column; }
+  .barrier-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 0.5px solid var(--border2); }
+  .barrier-icon {
+    width: 34px; height: 34px; border-radius: 6px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .barrier-icon.warn { background: rgba(186,117,23,0.15); }
+  .barrier-icon.info { background: rgba(55,138,221,0.12); }
+  .barrier-icon.succ { background: rgba(29,158,117,0.12); }
+  .barrier-row h4 { font-size: 13px; font-weight: 500; color: var(--bone); margin-bottom: 3px; }
+  .barrier-row p { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .badge {
+    display: inline-block; font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 3px; margin-bottom: 5px;
+  }
+  .badge.evil { background: rgba(200,98,42,0.15); color: var(--rust); }
+  .badge.good { background: rgba(29,158,117,0.15); color: #1D9E75; }
+  .badge.both { background: rgba(186,117,23,0.15); color: #BA7517; }
+
+  /* ── FORMULA FOOTER ── */
+  footer {
+    padding: 2rem 2.5rem;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: gap;
+    border-top: 0.5px solid var(--border);
+  }
+  .formula { font-size: 13px; color: var(--muted2); letter-spacing: 0.06em; }
+  .formula em { color: var(--rust); font-style: normal; }
+  .footer-note { font-size: 11px; color: var(--muted3); letter-spacing: 0.04em; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .hero-title { font-size: 48px; }
+    .force-readout { grid-template-columns: 1fr 1fr; }
+    .paradox-item { grid-template-columns: 24px 1fr; }
+    .verdict { display: none; }
+    nav .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">Friction</span>
+  <div class="nav-links">
+    <a href="#lab">Lab</a>
+    <a href="#domains">Domains</a>
+    <a href="#paradox">Paradox</a>
+    <a href="#ml">ML &amp; AI</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="eyebrow">A conceptual project</div>
+  <h1 class="hero-title">FRICTION<br><span>— A NECESSARY</span><br>EVIL</h1>
+  <p class="hero-subtitle">The force that slows everything down. The resistance that makes anything possible. An exploration across physics, design, economics, psychology — and machine learning.</p>
+  <div class="hero-meta">
+    <div class="meta-item"><span class="meta-label">Domains</span><span class="meta-val">5</span></div>
+    <div class="meta-item"><span class="meta-label">Type</span><span class="meta-val">Interactive</span></div>
+    <div class="meta-item"><span class="meta-label">Formula</span><span class="meta-val" style="font-size:15px;margin-top:3px;">f = μ · N</span></div>
+    <div class="meta-item"><span class="meta-label">ML formula</span><span class="meta-val" style="font-size:15px;margin-top:3px;">w ← w − α∇L − λw</span></div>
+  </div>
+</header>
+
+<!-- PHYSICS LAB -->
+<section id="lab">
+  <div class="section-inner">
+    <div class="section-head">Live friction lab</div>
+    <div class="drag-arena">
+      <div class="surface-label">Select surface material</div>
+      <div class="surface-selector">
+        <button class="surf-btn" data-mu="0.04" data-name="Teflon" data-emoji="🍳" onclick="setSurface(this)">Teflon (μ=0.04)</button>
+        <button class="surf-btn active" data-mu="0.1" data-name="Ice" data-emoji="🧊" onclick="setSurface(this)">Ice (μ=0.10)</button>
+        <button class="surf-btn" data-mu="0.2" data-name="Plastic" data-emoji="🥤" onclick="setSurface(this)">Plastic (μ=0.20)</button>
+        <button class="surf-btn" data-mu="0.35" data-name="Wood" data-emoji="🪵" onclick="setSurface(this)">Wood (μ=0.35)</button>
+        <button class="surf-btn" data-mu="0.45" data-name="Iron" data-emoji="🔩" onclick="setSurface(this)">Iron (μ=0.45)</button>
+        <button class="surf-btn" data-mu="0.55" data-name="Concrete" data-emoji="🧱" onclick="setSurface(this)">Concrete (μ=0.55)</button>
+        <button class="surf-btn" data-mu="0.8" data-name="Rubber" data-emoji="🦆" onclick="setSurface(this)">Rubber (μ=0.80)</button>
+        <button class="surf-btn" data-mu="0.95" data-name="Sandpaper" data-emoji="🪨" onclick="setSurface(this)">Sandpaper (μ=0.95)</button>
+        <button class="surf-btn" data-mu="0.50" data-name="Custom" data-emoji="⚙️" id="custom-surf-btn" onclick="setSurface(this)">Custom</button>
+      </div>
+
+      <div class="ctrl-row" style="margin-top: 1rem; margin-bottom: 1.5rem;">
+        <label>Applied Force <input type="range" id="lab-force" min="10" max="150" value="50" step="5" oninput="updateLabForce(this.value)"> <span class="val" id="lab-force-val">50 N</span></label>
+        <label>Mass <input type="range" id="lab-mass" min="2" max="30" value="10" step="1" oninput="updateLabMass(this.value)"> <span class="val" id="lab-mass-val">10 kg</span></label>
+        <label>Custom μ <input type="range" id="lab-mu" min="0" max="120" value="10" step="1" oninput="updateLabMu(this.value)"> <span class="val" id="lab-mu-val">0.10</span></label>
+      </div>
+
+      <div class="track-container">
+        <div id="block" class="block">🧊</div>
+        <div class="track-surface"><div class="track-progress" id="trackProgress"></div></div>
+      </div>
+      <div class="heat-bar">
+        <span class="heat-label">Heat</span>
+        <div class="heat-track"><div class="heat-fill" id="heatFill"></div></div>
+        <span class="heat-value" id="heatVal">0°C</span>
+      </div>
+      <div class="force-readout">
+        <div class="readout-cell"><div class="readout-cell-label">Friction Force</div><div class="readout-cell-val" id="rForce">0.0 N</div></div>
+        <div class="readout-cell"><div class="readout-cell-label">Coefficient μ</div><div class="readout-cell-val" id="rMu">0.10</div></div>
+        <div class="readout-cell"><div class="readout-cell-label">Distance</div><div class="readout-cell-val" id="rDist">0 m</div></div>
+      </div>
+      <button class="push-btn" id="pushBtn" onclick="startPush()">▶ Apply Force (50N)</button>
+      <div id="status-msg">Select a surface and apply force to observe friction.</div>
+    </div>
+  </div>
+</section>
+
+<!-- DOMAINS -->
+<section id="domains">
+  <div class="section-inner">
+    <div class="section-head">Four domains of friction</div>
+    <div class="domain-grid">
+      <div class="domain-card" onclick="toggleDomain(this)">
+        <span class="domain-icon">⚙️</span>
+        <div class="domain-name">Physics</div>
+        <div class="domain-mu">μ ranges: 0.01 – 1.2</div>
+        <div class="friction-bar"><div class="friction-fill" style="width:65%"></div></div>
+        <div class="domain-desc">Where friction was first defined. F = μN governs everything from car brakes to walking. Without static friction, you couldn't take a single step. Without kinetic friction, everything would slide forever — a world of pure chaos.</div>
+      </div>
+      <div class="domain-card" onclick="toggleDomain(this)">
+        <span class="domain-icon">🖱️</span>
+        <div class="domain-name">UX Design</div>
+        <div class="domain-mu">Intentional resistance</div>
+        <div class="friction-bar"><div class="friction-fill" style="width:45%"></div></div>
+        <div class="domain-desc">Designers remove friction to create smooth flows — but intentional friction prevents mistakes. A "Are you sure?" dialog is friction that saves you. No friction = accidental purchases, impulsive deletions, regrettable sends.</div>
+      </div>
+      <div class="domain-card" onclick="toggleDomain(this)">
+        <span class="domain-icon">📈</span>
+        <div class="domain-name">Economics</div>
+        <div class="domain-mu">Transaction costs</div>
+        <div class="friction-bar"><div class="friction-fill" style="width:80%"></div></div>
+        <div class="domain-desc">Market friction — taxes, information asymmetry, switching costs — is what allows monopolies to exist but also what makes local markets possible. Zero-friction markets are frictionless dystopias where only giants survive.</div>
+      </div>
+      <div class="domain-card" onclick="toggleDomain(this)">
+        <span class="domain-icon">🧠</span>
+        <div class="domain-name">Psychology</div>
+        <div class="domain-mu">Cognitive resistance</div>
+        <div class="friction-bar"><div class="friction-fill" style="width:55%"></div></div>
+        <div class="domain-desc">Psychological friction — the discomfort of change, the effort of thinking — slows bad decisions. Behavioral economics uses friction as a nudge: making junk food harder to grab, making gym sign-ups easier, making 401k opt-out by default.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARADOX -->
+<section id="paradox">
+  <div class="section-inner">
+    <div class="section-head">The friction paradox</div>
+    <div>
+      <div class="paradox-item">
+        <span class="paradox-num">01</span>
+        <span class="paradox-text"><strong>No tires grip the road without friction.</strong> The very thing that wears your tires is what stops you from dying.</span>
+        <span class="verdict both">Both</span>
+      </div>
+      <div class="paradox-item">
+        <span class="paradox-num">02</span>
+        <span class="paradox-text"><strong>Social friction causes conflict.</strong> But it also prevents groupthink. Disagreement is the friction of democracy.</span>
+        <span class="verdict good">Necessary</span>
+      </div>
+      <div class="paradox-item">
+        <span class="paradox-num">03</span>
+        <span class="paradox-text"><strong>Platform frictionlessness enabled viral misinformation.</strong> One-click share = no time to think.</span>
+        <span class="verdict evil">Evil</span>
+      </div>
+      <div class="paradox-item">
+        <span class="paradox-num">04</span>
+        <span class="paradox-text"><strong>Friction generates heat.</strong> In engines, this is waste. In muscles, it's warmth. Context determines everything.</span>
+        <span class="verdict both">Both</span>
+      </div>
+      <div class="paradox-item">
+        <span class="paradox-num">05</span>
+        <span class="paradox-text"><strong>Bureaucratic friction protects citizens</strong> from impulsive governance — and also kills innovation. Same force, dual face.</span>
+        <span class="verdict both">Both</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ML SECTION -->
+<section id="ml">
+  <div class="section-inner">
+    <div class="section-head">Friction in machine learning &amp; AI</div>
+
+    <div class="ml-tabs">
+      <button class="ml-tab active" onclick="mlTab('landscape', this)">Loss landscape</button>
+      <button class="ml-tab" onclick="mlTab('optimizer', this)">Optimizer comparison</button>
+      <button class="ml-tab" onclick="mlTab('barriers', this)">Optimization barriers</button>
+    </div>
+
+    <!-- TAB: Loss landscape -->
+    <div id="ml-landscape">
+      <div class="ctrl-row">
+        <label>Learning rate <input type="range" id="lr" min="1" max="30" value="8" step="1" oninput="updateLR(this.value)"> <span class="val" id="lr-val">0.08</span></label>
+        <label>Friction (L2) <input type="range" id="wd" min="0" max="20" value="5" step="1" oninput="updateWD(this.value)"> <span class="val" id="wd-val">0.05</span></label>
+        <button class="reset-btn" onclick="resetBall()">Reset</button>
+      </div>
+      <div class="canvas-wrap"><canvas id="lossCanvas"></canvas></div>
+      <div class="ml-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div> Ball (parameters)</div>
+        <div class="leg-item"><div class="leg-dash" style="background:#378ADD;opacity:0.4"></div> Trail</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#D85A30"></div> Global min</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#888780"></div> Local min / saddle</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-lbl">Loss</div><div class="stat-val" id="stat-loss">—</div></div>
+        <div class="stat-card"><div class="stat-lbl">Step</div><div class="stat-val" id="stat-step">0</div></div>
+        <div class="stat-card"><div class="stat-lbl">LR effect</div><div class="stat-val" id="stat-lr-effect">—</div></div>
+        <div class="stat-card"><div class="stat-lbl">Status</div><div class="stat-val" id="stat-status" style="font-size:13px;padding-top:4px">Click landscape to start</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:1rem;line-height:1.6;">Click anywhere on the loss curve to drop the ball and run gradient descent. High learning rate = chaotic bouncing. High L2 friction = pulled back toward center. Try to find the global minimum (orange dot).</p>
+    </div>
+
+    <!-- TAB: Optimizer comparison -->
+    <div id="ml-optimizer" style="display:none">
+      <div class="ctrl-row">
+        <label>Steps <input type="range" id="opt-steps" min="10" max="200" value="60" step="10" oninput="runOptimizers()"> <span class="val" id="opt-steps-val">60</span></label>
+        <label>Noise <input type="range" id="opt-noise" min="0" max="20" value="5" step="1" oninput="runOptimizers()"> <span class="val" id="opt-noise-val">0.05</span></label>
+      </div>
+      <div class="canvas-wrap"><canvas id="optCanvas"></canvas></div>
+      <div class="ml-legend">
+        <div class="leg-item"><div class="leg-dash" style="background:#E24B4A;height:2px"></div> SGD — high friction, slow, noisy</div>
+        <div class="leg-item"><div class="leg-dash" style="background:#378ADD;height:2px;border-top:2px dashed #378ADD;background:none"></div> Momentum — medium friction, builds speed</div>
+        <div class="leg-item"><div class="leg-dash" style="background:#1D9E75;height:2px;border-top:2px dotted #1D9E75;background:none"></div> Adam — adaptive friction per parameter</div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:1rem;line-height:1.6;">All three optimizers start from the same point. Adam adapts friction per parameter — rough terrain gets more resistance, smooth terrain gets less. This is why Adam dominates modern ML.</p>
+    </div>
+
+    <!-- TAB: Barriers -->
+    <div id="ml-barriers" style="display:none">
+      <div class="barrier-list">
+        <div class="barrier-row">
+          <div class="barrier-icon warn">↓</div>
+          <div>
+            <div class="badge evil">Friction as enemy</div>
+            <h4>Vanishing gradients</h4>
+            <p>Each layer multiplies the gradient by a small number (sigmoid derivative ≤ 0.25). Across 20 layers: 0.25²⁰ ≈ 10⁻¹². The early layers receive effectively zero signal and can't learn. ReLU activations and residual connections (ResNets) are friction-reducers that solved this.</p>
+          </div>
+        </div>
+        <div class="barrier-row">
+          <div class="barrier-icon warn">∿</div>
+          <div>
+            <div class="badge evil">Friction as enemy</div>
+            <h4>Saddle points &amp; flat plateaus</h4>
+            <p>In high-dimensional spaces, saddle points are far more common than local minima. The gradient is near zero in all directions — the optimizer stalls. Flat plateaus have the same effect: tiny gradients, slow or no progress regardless of learning rate.</p>
+          </div>
+        </div>
+        <div class="barrier-row">
+          <div class="barrier-icon info">λ</div>
+          <div>
+            <div class="badge good">Friction as tool</div>
+            <h4>L2 regularization (weight decay)</h4>
+            <p>Adds a penalty proportional to weight magnitude: L_total = L_task + λΣw². During backprop, this adds a drag term −λw to every update. Large weights are pulled back harder. Result: smoother, more generalizable models that resist overfitting.</p>
+          </div>
+        </div>
+        <div class="barrier-row">
+          <div class="barrier-icon info">p</div>
+          <div>
+            <div class="badge good">Friction as tool</div>
+            <h4>Dropout</h4>
+            <p>Randomly zero-masks neurons at rate p during training. Forces the network to develop multiple redundant paths — no single neuron can coast. It's surface roughness applied to the computation graph, preventing any one path from becoming a frictionless highway.</p>
+          </div>
+        </div>
+        <div class="barrier-row">
+          <div class="barrier-icon succ">τ</div>
+          <div>
+            <div class="badge both">Adaptive friction</div>
+            <h4>Gradient clipping</h4>
+            <p>Caps gradient norm to a threshold τ. When gradients explode at loss cliffs or sharp curvature, this acts as a hard speed limiter. Essential for RNNs and transformers on long sequences. Friction only when the terrain demands it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="formula"><em>f</em> = <em>μ</em> · N &nbsp;·&nbsp; context &nbsp;&nbsp;|&nbsp;&nbsp; w ← w − α∇L − <em>λ</em>w</div>
+  <div class="footer-note">Friction – A Necessary Evil &nbsp;·&nbsp; Interactive Project</div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════
+   PHYSICS LAB
+═══════════════════════════════════════ */
+let mu = 0.1, animating = false, progress = 0, heat = 0;
+let appliedForce = 50, mass = 10;
+const g = 9.8;
+const block = document.getElementById('block');
+const trackProgress = document.getElementById('trackProgress');
+const heatFill = document.getElementById('heatFill');
+const heatVal = document.getElementById('heatVal');
+const rForce = document.getElementById('rForce');
+const rMu = document.getElementById('rMu');
+const rDist = document.getElementById('rDist');
+const statusMsg = document.getElementById('status-msg');
+
+function setSurface(btn) {
+  document.querySelectorAll('.surf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  mu = parseFloat(btn.dataset.mu);
+  rMu.textContent = mu.toFixed(2);
+  
+  // Sync the custom mu slider with the button value
+  const muSlider = document.getElementById('lab-mu');
+  if (muSlider) {
+    muSlider.value = Math.round(mu * 100);
+    document.getElementById('lab-mu-val').textContent = mu.toFixed(2);
+  }
+
+  // Update block emoji dynamically based on surface material
+  block.textContent = btn.dataset.emoji || '📦';
+
+  resetPhysics();
+  statusMsg.textContent = 'Surface: ' + btn.dataset.name + ' — μ = ' + mu.toFixed(2);
+}
+
+function updateLabForce(v) {
+  appliedForce = parseInt(v);
+  document.getElementById('lab-force-val').textContent = appliedForce + ' N';
+  document.getElementById('pushBtn').textContent = '▶ Apply Force (' + appliedForce + 'N)';
+}
+
+function updateLabMass(v) {
+  mass = parseInt(v);
+  document.getElementById('lab-mass-val').textContent = mass + ' kg';
+}
+
+function updateLabMu(v) {
+  mu = parseFloat(v) / 100;
+  document.getElementById('lab-mu-val').textContent = mu.toFixed(2);
+  rMu.textContent = mu.toFixed(2);
+  
+  // Set custom button active
+  const customBtn = document.getElementById('custom-surf-btn');
+  document.querySelectorAll('.surf-btn').forEach(b => b.classList.remove('active'));
+  customBtn.classList.add('active');
+  customBtn.dataset.mu = mu.toFixed(2);
+  
+  // Update block emoji dynamically
+  block.textContent = customBtn.dataset.emoji || '⚙️';
+  
+  resetPhysics();
+  statusMsg.textContent = 'Surface: Custom — μ = ' + mu.toFixed(2);
+}
+
+function resetPhysics() {
+  progress = 0; heat = 0; animating = false;
+  block.style.left = '0%'; block.classList.remove('moving');
+  trackProgress.style.width = '0%';
+  heatFill.style.width = '0%';
+  heatVal.textContent = '0°C'; heatVal.style.color = 'var(--rust)';
+  rForce.textContent = '0.0 N'; rDist.textContent = '0 m';
+}
+
+function startPush() {
+  if (animating) return;
+  resetPhysics();
+  const frictionForce = mu * mass * g;
+  const netForce = appliedForce - frictionForce;
+  rForce.textContent = frictionForce.toFixed(1) + ' N';
+  if (netForce <= 0) {
+    statusMsg.textContent = 'Object won\'t move — friction force (' + frictionForce.toFixed(1) + 'N) ≥ applied force (' + appliedForce + 'N).';
+    statusMsg.style.color = 'var(--rust)';
+    return;
+  }
+  animating = true;
+  statusMsg.textContent = 'Moving... Net force: ' + netForce.toFixed(1) + 'N';
+  statusMsg.style.color = 'var(--muted)';
+  const speed = netForce / appliedForce;
+  let startTime = null;
+  block.classList.add('moving');
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    const elapsed = (ts - startTime) / 1000;
+    progress = Math.min(elapsed * speed * 60, 100);
+    heat = Math.min(progress * mu * 1.2, 100);
+    block.style.left = 'calc(' + progress + '% - ' + (progress / 100 * 44) + 'px)';
+    trackProgress.style.width = progress + '%';
+    heatFill.style.width = heat + '%';
+    const temp = Math.round(heat * 0.8);
+    heatVal.textContent = temp + '°C';
+    heatVal.style.color = temp > 40 ? '#E04040' : 'var(--rust)';
+    rDist.textContent = (progress / 100 * 8).toFixed(1) + ' m';
+    if (progress < 100) requestAnimationFrame(animate);
+    else {
+      animating = false; block.classList.remove('moving');
+      statusMsg.textContent = 'Stopped — ' + frictionForce.toFixed(1) + 'N friction generated ' + temp + '°C of heat.';
+      statusMsg.style.color = '#4A9E60';
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function toggleDomain(card) {
+  const was = card.classList.contains('expanded');
+  document.querySelectorAll('.domain-card').forEach(c => c.classList.remove('expanded'));
+  if (!was) card.classList.add('expanded');
+}
+
+/* ═══════════════════════════════════════
+   ML SECTION
+═══════════════════════════════════════ */
+function mlTab(name, btn) {
+  ['landscape','optimizer','barriers'].forEach(t => {
+    document.getElementById('ml-' + t).style.display = t === name ? '' : 'none';
+  });
+  document.querySelectorAll('.ml-tab').forEach(b => b.classList.toggle('active', b === btn));
+  if (name === 'optimizer') runOptimizers();
+  if (name === 'landscape') drawLandscape();
+}
+
+/* Loss landscape */
+const W = 680, H = 260;
+let ballX = 0, ballV = 0, trail = [], step = 0, animId = null, running = false, started = false;
+let lr = 0.08, wd = 0.05;
+
+function lossFunc(x) {
+  return 2.5*Math.sin(x*1.2) + 1.5*Math.sin(x*2.7+1) + 0.8*Math.cos(x*4.1) + 0.3*Math.sin(x*7+2) + 0.008*x*x;
+}
+function grad(x) { const e=0.01; return (lossFunc(x+e)-lossFunc(x-e))/(2*e); }
+
+const xMin=-5, xMax=5;
+function toPixX(x) { return (x-xMin)/(xMax-xMin)*W; }
+
+let yMin, yMax;
+(function() {
+  let mn=Infinity, mx=-Infinity;
+  for(let x=xMin;x<=xMax;x+=0.05){const y=lossFunc(x);mn=Math.min(mn,y);mx=Math.max(mx,y);}
+  yMin=mn-0.5; yMax=mx+0.5;
+})();
+function toPixY(y) { return H-20-(y-yMin)/(yMax-yMin)*(H-40); }
+
+let globalMinX=(function(){let bx=xMin,by=Infinity;for(let x=xMin;x<=xMax;x+=0.01){const y=lossFunc(x);if(y<by){by=y;bx=x;}}return bx;})();
+
+function drawLandscape() {
+  const c = document.getElementById('lossCanvas');
+  if (!c) return;
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  ctx.beginPath();
+  let first=true;
+  for(let x=xMin;x<=xMax;x+=0.02){
+    const px=toPixX(x),py=toPixY(lossFunc(x));
+    if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+  }
+  ctx.strokeStyle='#5A5A56'; ctx.lineWidth=1.5; ctx.stroke();
+
+  ctx.beginPath(); ctx.moveTo(toPixX(xMin),toPixY(yMin));
+  for(let x=xMin;x<=xMax;x+=0.02) ctx.lineTo(toPixX(x),toPixY(lossFunc(x)));
+  ctx.lineTo(toPixX(xMax),toPixY(yMin));
+  ctx.fillStyle='rgba(55,138,221,0.06)'; ctx.fill();
+
+  const gmPx=toPixX(globalMinX),gmPy=toPixY(lossFunc(globalMinX));
+  ctx.beginPath(); ctx.arc(gmPx,gmPy,5,0,Math.PI*2);
+  ctx.fillStyle='#D85A30'; ctx.fill();
+  ctx.fillStyle='#888780'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('global min',gmPx,gmPy-10);
+
+  if(trail.length>1){
+    for(let i=1;i<trail.length;i++){
+      const alpha=(i/trail.length)*0.5;
+      ctx.beginPath();
+      ctx.moveTo(toPixX(trail[i-1].x),toPixY(trail[i-1].y));
+      ctx.lineTo(toPixX(trail[i].x),toPixY(trail[i].y));
+      ctx.strokeStyle='rgba(55,138,221,'+alpha+')'; ctx.lineWidth=1.5; ctx.stroke();
+    }
+  }
+  if(started){
+    const bpx=toPixX(ballX),bpy=toPixY(lossFunc(ballX));
+    ctx.beginPath(); ctx.arc(bpx,bpy,7,0,Math.PI*2);
+    ctx.fillStyle='#378ADD'; ctx.fill();
+    ctx.strokeStyle='white'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+
+  const el = document.getElementById('stat-loss');
+  const es = document.getElementById('stat-step');
+  const el2 = document.getElementById('stat-lr-effect');
+  const es2 = document.getElementById('stat-status');
+  if(el) el.textContent = started ? lossFunc(ballX).toFixed(3) : '—';
+  if(es) es.textContent = step;
+  if(el2) el2.textContent = lr>0.2?'Unstable':lr<0.05?'Slow':'Optimal';
+  if(es2 && running) es2.textContent='Training...';
+  else if(es2 && started) es2.textContent = Math.abs(ballX-globalMinX)<0.3?'Converged':'Exploring';
+}
+
+function stepGD() {
+  const g=grad(ballX);
+  ballV=ballV*0.85 - lr*g - wd*ballX;
+  ballX=Math.max(xMin+0.1,Math.min(xMax-0.1,ballX+ballV));
+  trail.push({x:ballX,y:lossFunc(ballX)});
+  if(trail.length>80) trail.shift();
+  step++;
+}
+
+function startRun() {
+  if(running) return;
+  running=true; ballV=0;
+  function loop(){
+    if(!running) return;
+    stepGD(); drawLandscape();
+    if(step<300 && Math.abs(ballV)>0.0001) animId=requestAnimationFrame(loop);
+    else running=false;
+  }
+  loop();
+}
+
+function resetBall() {
+  cancelAnimationFrame(animId);
+  running=false; started=false; ballX=0; ballV=0; trail=[]; step=0;
+  const s=document.getElementById('stat-status');
+  const l=document.getElementById('stat-loss');
+  const st=document.getElementById('stat-step');
+  if(s) s.textContent='Click landscape to start';
+  if(l) l.textContent='—';
+  if(st) st.textContent='0';
+  drawLandscape();
+}
+
+function updateLR(v) { lr=v/100; document.getElementById('lr-val').textContent=lr.toFixed(2); }
+function updateWD(v) { wd=v/100; document.getElementById('wd-val').textContent=wd.toFixed(2); }
+
+document.getElementById('lossCanvas').addEventListener('click', function(e){
+  const rect=this.getBoundingClientRect();
+  const scaleX=W/rect.width;
+  const px=(e.clientX-rect.left)*scaleX;
+  ballX=xMin+(px/W)*(xMax-xMin);
+  ballV=0; trail=[]; step=0; started=true; running=false;
+  cancelAnimationFrame(animId);
+  drawLandscape();
+  startRun();
+});
+
+drawLandscape();
+
+/* Optimizer comparison */
+function runOptimizers() {
+  const stepsEl=document.getElementById('opt-steps');
+  const noiseEl=document.getElementById('opt-noise');
+  if(!stepsEl||!noiseEl) return;
+  const steps=parseInt(stepsEl.value);
+  const noise=parseInt(noiseEl.value)/100;
+  document.getElementById('opt-steps-val').textContent=steps;
+  document.getElementById('opt-noise-val').textContent=noise.toFixed(2);
+
+  const c=document.getElementById('optCanvas');
+  if(!c) return;
+  c.width=W; c.height=H;
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  ctx.beginPath(); let first=true;
+  for(let x=xMin;x<=xMax;x+=0.02){
+    const px=toPixX(x),py=toPixY(lossFunc(x));
+    if(first){ctx.moveTo(px,py);first=false;}else ctx.lineTo(px,py);
+  }
+  ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1; ctx.stroke();
+
+  function simulate(type){
+    let x=-4,v=0,m1=0,m2=0;
+    const lrS=0.15,trail2=[{x,y:lossFunc(x)}];
+    for(let i=0;i<steps;i++){
+      let g=grad(x)+(Math.random()-0.5)*noise;
+      if(type==='sgd'){x-=lrS*g;}
+      else if(type==='momentum'){v=0.85*v-0.1*g;x+=v;}
+      else{
+        const t=i+1; m1=0.9*m1+0.1*g; m2=0.999*m2+0.001*g*g;
+        const mh=m1/(1-Math.pow(0.9,t)), vh=m2/(1-Math.pow(0.999,t));
+        x-=0.2*mh/(Math.sqrt(vh)+1e-8);
+      }
+      x=Math.max(xMin+0.1,Math.min(xMax-0.1,x));
+      trail2.push({x,y:lossFunc(x)});
+    }
+    return trail2;
+  }
+
+  [{type:'sgd',color:'#E24B4A',dash:[]},{type:'momentum',color:'#378ADD',dash:[6,3]},{type:'adam',color:'#1D9E75',dash:[2,2]}]
+  .forEach(cfg=>{
+    const tr=simulate(cfg.type);
+    ctx.beginPath(); ctx.setLineDash(cfg.dash);
+    tr.forEach((pt,i)=>{
+      const px=toPixX(pt.x),py=toPixY(pt.y);
+      if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    });
+    ctx.strokeStyle=cfg.color; ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
+    const last=tr[tr.length-1];
+    ctx.beginPath(); ctx.arc(toPixX(last.x),toPixY(last.y),5,0,Math.PI*2);
+    ctx.fillStyle=cfg.color; ctx.fill();
+  });
+
+  const gmPx=toPixX(globalMinX),gmPy=toPixY(lossFunc(globalMinX));
+  ctx.beginPath(); ctx.arc(gmPx,gmPy,5,0,Math.PI*2);
+  ctx.fillStyle='#D85A30'; ctx.fill();
+}
+
+/* init */
+rMu.textContent = mu.toFixed(2);
+</script>
+</body>
+</html>
