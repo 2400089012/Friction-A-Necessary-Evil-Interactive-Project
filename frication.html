@@ -49,6 +49,7 @@
     border-bottom: 0.5px solid var(--border);
     padding: 0 2.5rem;
     display: flex; align-items: center; gap: 0; height: 48px;
+    animation: navSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   .nav-brand {
     font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
@@ -60,6 +61,22 @@
     font-size: 12px; color: var(--muted); text-decoration: none;
     letter-spacing: 0.04em; border-left: 0.5px solid var(--border);
     transition: color 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--rust);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-links a:hover::after {
+    transform: translateY(0);
   }
   .nav-links a:hover { color: var(--bone); }
 
@@ -78,25 +95,43 @@
   .eyebrow {
     font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
     color: var(--rust); margin-bottom: 1rem; font-weight: 500;
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
   }
   .hero-title {
-    font-size: clamp(52px, 10vw, 104px);
-    font-weight: 700; line-height: 0.92; letter-spacing: -0.03em;
+    font-size: clamp(44px, 8vw, 84px);
+    font-weight: 700; line-height: 0.95; letter-spacing: -0.03em;
     color: var(--bone); margin-bottom: 0.5rem; position: relative;
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
   }
   .hero-title span { color: var(--rust); }
   .hero-subtitle {
     font-size: 14px; color: var(--muted); margin-top: 1.2rem;
     max-width: 480px; line-height: 1.7; letter-spacing: 0.01em;
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
   }
   .hero-meta {
     display: flex; gap: 2.5rem; margin-top: 2rem;
     padding-top: 1.5rem; border-top: 0.5px solid var(--border);
     flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
   }
   .meta-item { display: flex; flex-direction: column; gap: 4px; }
   .meta-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted2); }
   .meta-val { font-size: 20px; font-weight: 500; color: var(--bone); }
+
+  /* Keyframe Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes navSlideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 
   /* ── SECTION WRAPPER ── */
   section { border-bottom: 0.5px solid var(--border); }
@@ -157,9 +192,29 @@
     gap: 1px; background: var(--border); border: 0.5px solid var(--border);
     border-radius: 8px; overflow: hidden;
   }
-  .domain-card { background: #0F0F0E; padding: 1.5rem; cursor: pointer; transition: background 0.15s; }
-  .domain-card:hover, .domain-card.expanded { background: var(--dark2); }
-  .domain-icon { font-size: 22px; margin-bottom: 0.75rem; display: block; }
+  .domain-card { 
+    background: #0F0F0E; 
+    padding: 1.5rem; 
+    cursor: pointer; 
+    transition: background 0.2s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, box-shadow 0.4s; 
+    border: 0.5px solid transparent;
+  }
+  .domain-card:hover { 
+    background: var(--dark2); 
+    transform: translateY(-4px);
+    border-color: var(--rust);
+    box-shadow: 0 8px 24px rgba(200,98,42,0.12);
+  }
+  .domain-card.expanded { background: var(--dark2); }
+  .domain-icon { 
+    font-size: 22px; 
+    margin-bottom: 0.75rem; 
+    display: inline-block; 
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .domain-card:hover .domain-icon {
+    transform: scale(1.2) rotate(6deg);
+  }
   .domain-name { font-size: 14px; font-weight: 500; color: var(--bone); margin-bottom: 4px; }
   .domain-mu { font-size: 11px; color: var(--rust); letter-spacing: 0.06em; margin-bottom: 0.75rem; }
   .domain-desc {
@@ -175,6 +230,11 @@
     display: grid; grid-template-columns: 28px 1fr 90px;
     align-items: center; gap: 1rem; padding: 1rem 0;
     border-bottom: 0.5px solid var(--border2);
+    transition: background-color 0.2s, padding-left 0.2s ease;
+  }
+  .paradox-item:hover {
+    background-color: rgba(255, 255, 255, 0.015);
+    padding-left: 8px;
   }
   .paradox-num { font-size: 11px; color: var(--muted4); font-weight: 500; }
   .paradox-text { font-size: 13px; color: #8A8A82; line-height: 1.5; }
@@ -252,12 +312,43 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
-    .hero-title { font-size: 48px; }
+    .hero-title { font-size: 36px; }
     .force-readout { grid-template-columns: 1fr 1fr; }
     .paradox-item { grid-template-columns: 24px 1fr; }
     .verdict { display: none; }
     nav .nav-links { display: none; }
   }
+
+  /* Reveal Animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-stagger.active > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-stagger.active > *:nth-child(1) { transition-delay: 0.05s; }
+  .reveal-stagger.active > *:nth-child(2) { transition-delay: 0.12s; }
+  .reveal-stagger.active > *:nth-child(3) { transition-delay: 0.19s; }
+  .reveal-stagger.active > *:nth-child(4) { transition-delay: 0.26s; }
+  .reveal-stagger.active > *:nth-child(5) { transition-delay: 0.33s; }
+  .reveal-stagger.active > *:nth-child(6) { transition-delay: 0.40s; }
+  .reveal-stagger.active > *:nth-child(7) { transition-delay: 0.47s; }
+  .reveal-stagger.active > *:nth-child(8) { transition-delay: 0.54s; }
 
   /* ── QUIZ SECTION ── */
   #quiz .section-inner { background: var(--dark3); }
@@ -518,7 +609,7 @@
 
 <!-- PHYSICS LAB -->
 <section id="lab">
-  <div class="section-inner">
+  <div class="section-inner reveal">
     <div class="section-head">Live friction lab</div>
     <div class="drag-arena">
       <div class="surface-label">Select surface material</div>
@@ -562,9 +653,9 @@
 
 <!-- DOMAINS -->
 <section id="domains">
-  <div class="section-inner">
+  <div class="section-inner reveal">
     <div class="section-head">Four domains of friction</div>
-    <div class="domain-grid">
+    <div class="domain-grid reveal-stagger">
       <div class="domain-card" onclick="toggleDomain(this)">
         <span class="domain-icon">⚙️</span>
         <div class="domain-name">Physics</div>
@@ -599,9 +690,9 @@
 
 <!-- PARADOX -->
 <section id="paradox">
-  <div class="section-inner">
+  <div class="section-inner reveal">
     <div class="section-head">The friction paradox</div>
-    <div>
+    <div class="reveal-stagger">
       <div class="paradox-item">
         <span class="paradox-num">01</span>
         <span class="paradox-text"><strong>No tires grip the road without friction.</strong> The very thing that wears your tires is what stops you from dying.</span>
@@ -633,7 +724,7 @@
 
 <!-- ML SECTION -->
 <section id="ml">
-  <div class="section-inner">
+  <div class="section-inner reveal">
     <div class="section-head">Friction in machine learning &amp; AI</div>
 
     <div class="ml-tabs">
@@ -656,7 +747,7 @@
         <div class="leg-item"><div class="leg-dot" style="background:#D85A30"></div> Global min</div>
         <div class="leg-item"><div class="leg-dot" style="background:#888780"></div> Local min / saddle</div>
       </div>
-      <div class="stat-grid">
+      <div class="stat-grid reveal-stagger">
         <div class="stat-card"><div class="stat-lbl">Loss</div><div class="stat-val" id="stat-loss">—</div></div>
         <div class="stat-card"><div class="stat-lbl">Step</div><div class="stat-val" id="stat-step">0</div></div>
         <div class="stat-card"><div class="stat-lbl">LR effect</div><div class="stat-val" id="stat-lr-effect">—</div></div>
@@ -682,7 +773,7 @@
 
     <!-- TAB: Barriers -->
     <div id="ml-barriers" style="display:none">
-      <div class="barrier-list">
+      <div class="barrier-list reveal-stagger">
         <div class="barrier-row">
           <div class="barrier-icon warn">↓</div>
           <div>
@@ -730,14 +821,14 @@
 
 <!-- QUIZ SECTION -->
 <section id="quiz">
-  <div class="section-inner">
+  <div class="section-inner reveal">
     <div class="section-head">Friction interactive quiz &amp; proficiency report</div>
     <div class="quiz-container">
       
       <!-- Quiz Main Area -->
       <div class="quiz-main">
         <!-- Question Navigation Grid -->
-        <div class="quiz-nav-grid" id="quiz-nav-grid"></div>
+        <div class="quiz-nav-grid reveal-stagger" id="quiz-nav-grid"></div>
         
         <!-- Active Question Card -->
         <div class="question-card" id="question-card"></div>
@@ -1628,6 +1719,27 @@ function resetQuiz() {
 
 // Initialize on page load
 initQuiz();
+
+/* Viewport Intersection Observer for Scroll-Driven Reveal Animations */
+(function() {
+  const revealElements = document.querySelectorAll(".reveal, .reveal-stagger");
+  const observerOptions = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("active");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  revealElements.forEach(el => observer.observe(el));
+})();
 </script>
 </body>
 </html>
