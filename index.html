@@ -265,14 +265,16 @@
     box-shadow: 0 8px 24px rgba(200,98,42,0.12);
   }
   .domain-card.expanded { background: var(--dark2); }
-  .domain-icon { 
-    font-size: 22px; 
+  .domain-img { 
+    width: 60px; 
+    height: 60px; 
+    object-fit: contain;
     margin-bottom: 0.75rem; 
     display: inline-block; 
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  .domain-card:hover .domain-icon {
-    transform: scale(1.2) rotate(6deg);
+  .domain-card:hover .domain-img {
+    transform: scale(1.25) rotate(6deg);
   }
   .domain-name { font-size: 14px; font-weight: 500; color: var(--bone); margin-bottom: 4px; }
   .domain-mu { font-size: 11px; color: var(--rust); letter-spacing: 0.06em; margin-bottom: 0.75rem; }
@@ -724,28 +726,28 @@
     <div class="section-head">Four domains of friction</div>
     <div class="domain-grid reveal-stagger">
       <div class="domain-card" onclick="toggleDomain(this)">
-        <span class="domain-icon">⚙️</span>
+        <img class="domain-img" src="physics_domain.png" alt="Physics Friction Icon">
         <div class="domain-name">Physics</div>
         <div class="domain-mu">μ ranges: 0.01 – 1.2</div>
         <div class="friction-bar"><div class="friction-fill" style="width:65%"></div></div>
         <div class="domain-desc">Where friction was first defined. F = μN governs everything from car brakes to walking. Without static friction, you couldn't take a single step. Without kinetic friction, everything would slide forever — a world of pure chaos.</div>
       </div>
       <div class="domain-card" onclick="toggleDomain(this)">
-        <span class="domain-icon">🖱️</span>
+        <img class="domain-img" src="ux_domain.png" alt="UX Friction Icon">
         <div class="domain-name">UX Design</div>
         <div class="domain-mu">Intentional resistance</div>
         <div class="friction-bar"><div class="friction-fill" style="width:45%"></div></div>
         <div class="domain-desc">Designers remove friction to create smooth flows — but intentional friction prevents mistakes. A "Are you sure?" dialog is friction that saves you. No friction = accidental purchases, impulsive deletions, regrettable sends.</div>
       </div>
       <div class="domain-card" onclick="toggleDomain(this)">
-        <span class="domain-icon">📈</span>
+        <img class="domain-img" src="econ_domain.png" alt="Economics Friction Icon">
         <div class="domain-name">Economics</div>
         <div class="domain-mu">Transaction costs</div>
         <div class="friction-bar"><div class="friction-fill" style="width:80%"></div></div>
         <div class="domain-desc">Market friction — taxes, information asymmetry, switching costs — is what allows monopolies to exist but also what makes local markets possible. Zero-friction markets are frictionless dystopias where only giants survive.</div>
       </div>
       <div class="domain-card" onclick="toggleDomain(this)">
-        <span class="domain-icon">🧠</span>
+        <img class="domain-img" src="psych_domain.png" alt="Psychology Friction Icon">
         <div class="domain-name">Psychology</div>
         <div class="domain-mu">Cognitive resistance</div>
         <div class="friction-bar"><div class="friction-fill" style="width:55%"></div></div>
