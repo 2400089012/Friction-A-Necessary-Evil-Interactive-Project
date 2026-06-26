@@ -258,6 +258,235 @@
     .verdict { display: none; }
     nav .nav-links { display: none; }
   }
+
+  /* ── QUIZ SECTION ── */
+  #quiz .section-inner { background: var(--dark3); }
+  .quiz-container {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+  @media (max-width: 900px) {
+    .quiz-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .quiz-nav-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .quiz-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 0.5px solid var(--muted4);
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .quiz-nav-btn:hover {
+    border-color: var(--muted2);
+    color: var(--bone);
+  }
+  .quiz-nav-btn.active {
+    border-color: var(--rust);
+    color: var(--rust);
+    box-shadow: 0 0 8px rgba(200,98,42,0.2);
+  }
+  .quiz-nav-btn.correct {
+    background: rgba(29, 158, 117, 0.15);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .quiz-nav-btn.wrong {
+    background: rgba(226, 75, 74, 0.15);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  
+  .question-card {
+    background: var(--dark2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    min-height: 280px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .question-category {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .question-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--bone);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+  
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .option-btn {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--dark3);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--muted2);
+    color: var(--bone);
+    background: var(--dark4);
+  }
+  .option-btn.selected {
+    border-color: var(--rust);
+    color: var(--bone);
+    background: rgba(200,98,42,0.05);
+  }
+  .option-btn.correct {
+    border-color: var(--green);
+    color: var(--bone);
+    background: rgba(29, 158, 117, 0.08);
+  }
+  .option-btn.wrong {
+    border-color: var(--red);
+    color: var(--bone);
+    background: rgba(226, 75, 74, 0.08);
+  }
+  
+  .explanation-box {
+    margin-top: 1.5rem;
+    padding: 12px 16px;
+    background: var(--dark4);
+    border-left: 2px solid var(--rust);
+    border-radius: 0 4px 4px 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    animation: fadeIn 0.25s ease-out;
+  }
+  .explanation-box strong {
+    color: var(--bone);
+    font-weight: 500;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .question-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .question-index-lbl {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  
+  /* Sidebar Report */
+  .report-card {
+    background: var(--dark2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    position: sticky;
+    top: 70px;
+  }
+  .report-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--bone);
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.02em;
+  }
+  .report-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .progress-bar-wrap {
+    height: 4px;
+    background: var(--dark4);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--rust);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  
+  .quiz-chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .feedback-box {
+    background: var(--dark3);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+  }
+  .feedback-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    background: rgba(122,121,114,0.15);
+    color: var(--muted);
+  }
+  .feedback-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
@@ -270,6 +499,7 @@
     <a href="#domains">Domains</a>
     <a href="#paradox">Paradox</a>
     <a href="#ml">ML &amp; AI</a>
+    <a href="#quiz">Quiz</a>
   </div>
 </nav>
 
@@ -494,6 +724,67 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ SECTION -->
+<section id="quiz">
+  <div class="section-inner">
+    <div class="section-head">Friction interactive quiz &amp; proficiency report</div>
+    <div class="quiz-container">
+      
+      <!-- Quiz Main Area -->
+      <div class="quiz-main">
+        <!-- Question Navigation Grid -->
+        <div class="quiz-nav-grid" id="quiz-nav-grid"></div>
+        
+        <!-- Active Question Card -->
+        <div class="question-card" id="question-card"></div>
+        
+        <!-- Question Controls -->
+        <div class="question-controls">
+          <button class="surf-btn" id="prev-btn" onclick="prevQuestion()">← Previous</button>
+          <span class="question-index-lbl" id="question-index-lbl">Question 1 of 20</span>
+          <button class="surf-btn" id="next-btn" onclick="nextQuestion()">Next →</button>
+        </div>
+      </div>
+      
+      <!-- Quiz Report Sidebar -->
+      <div class="quiz-sidebar">
+        <div class="report-card">
+          <h3 class="report-title">Real-time Proficiency Report</h3>
+          
+          <div class="report-stats">
+            <div class="stat-item">
+              <div class="readout-cell-label" style="font-size: 10px; margin-bottom: 2px;">Progress</div>
+              <div class="readout-cell-val" id="quiz-progress" style="font-size: 16px;">0/20 Answered</div>
+            </div>
+            <div class="stat-item">
+              <div class="readout-cell-label" style="font-size: 10px; margin-bottom: 2px;">Current Score</div>
+              <div class="readout-cell-val" id="quiz-score" style="font-size: 16px;">0/0 (0%)</div>
+            </div>
+          </div>
+          
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="quiz-progress-bar"></div>
+          </div>
+
+          <!-- Radar Chart Container -->
+          <div class="quiz-chart-wrap">
+            <canvas id="quizRadarChart"></canvas>
+          </div>
+          
+          <!-- Feedback Badge -->
+          <div class="feedback-box">
+            <div class="feedback-badge" id="feedback-badge">Uninitiated</div>
+            <p class="feedback-desc" id="feedback-desc">Answer questions to assess your mastery across friction domains.</p>
+          </div>
+          
+          <button class="reset-btn" style="width:100%; margin-top:1rem; padding: 8px;" onclick="resetQuiz()">Reset Quiz</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -822,6 +1113,521 @@ function runOptimizers() {
 
 /* init */
 rMu.textContent = mu.toFixed(2);
+
+/* ═══════════════════════════════════════
+   QUIZ IMPLEMENTATION
+   ═══════════════════════════════════════ */
+const quizQuestions = [
+  // Physics (0-3)
+  {
+    category: "Physics",
+    text: "What is the relation between static coefficient of friction (μ_s) and kinetic coefficient of friction (μ_k) for most materials?",
+    options: [
+      "μ_s < μ_k (static friction is always lower)",
+      "μ_s > μ_k (static friction is always higher or equal)",
+      "μ_s = μ_k (they are always identical)",
+      "μ_s = 0 while μ_k > 0 (static friction does not exist)"
+    ],
+    correct: 1,
+    explanation: "It generally takes more force to break the static bonds and start an object sliding (μ_s) than it does to keep it sliding (μ_k)."
+  },
+  {
+    category: "Physics",
+    text: "If you double the mass of a sliding block on a flat surface, how does the friction force change?",
+    options: [
+      "It remains exactly the same",
+      "It is halved",
+      "It doubles",
+      "It quadruples"
+    ],
+    correct: 2,
+    explanation: "On a flat surface, normal force N = mass * g. Since friction force f = μ * N, doubling the mass doubles the normal force, which directly doubles the friction force."
+  },
+  {
+    category: "Physics",
+    text: "Which of the following materials has the lowest coefficient of friction (μ ≈ 0.04) against steel, making it ideal for non-stick cookware?",
+    options: [
+      "Rubber",
+      "Concrete",
+      "Teflon (PTFE)",
+      "Polished Wood"
+    ],
+    correct: 2,
+    explanation: "Teflon has one of the lowest coefficients of friction of any solid material, which is why it is used for non-stick pans and low-friction industrial bearings."
+  },
+  {
+    category: "Physics",
+    text: "Why does kinetic friction generate heat in physical systems?",
+    options: [
+      "Because of microscopic surface collisions and bond breaking, converting kinetic energy to thermal energy",
+      "Because of mass loss due to surface wear",
+      "Because of chemical combustion between materials",
+      "Because of electromagnetic expansion of the normal force"
+    ],
+    correct: 0,
+    explanation: "At a microscopic level, surfaces are rough. As they slide past each other, asperities collide and molecular bonds form and break, converting mechanical kinetic energy into thermal energy."
+  },
+  
+  // UX Design (4-7)
+  {
+    category: "UX Design",
+    text: "What is the primary purpose of introducing 'intentional friction' in user interface design?",
+    options: [
+      "To make the application harder to navigate to increase active screen time",
+      "To reduce the visual performance footprint of complex animations",
+      "To slow down the user before critical, destructive, or irreversible actions",
+      "To force users to click on advertisements or promotion modals"
+    ],
+    correct: 2,
+    explanation: "Intentional friction (like a confirmation dialog, slide-to-confirm, or delay) prevents users from making accidental, costly errors by forcing cognitive pause."
+  },
+  {
+    category: "UX Design",
+    text: "Which of the following is an example of harmful (unintentional) friction in a checkout flow?",
+    options: [
+      "Requiring password confirmation before updating account details",
+      "Forcing a user to fill out a 15-field registration form before completing a purchase",
+      "Displaying an order confirmation screen before charging credit cards",
+      "Showing validation warning flags for invalid card numbers"
+    ],
+    correct: 1,
+    explanation: "Forcing users to complete redundant, lengthy forms increases cognitive load and transaction friction, which directly leads to cart abandonment."
+  },
+  {
+    category: "UX Design",
+    text: "How does the UX principle of 'nudging' utilize friction?",
+    options: [
+      "By making desirable actions frictionless and undesirable actions high-friction",
+      "By completely eliminating all user choices",
+      "By adding random pop-up messages to verify user attention",
+      "By forcing users to read long text documents before proceeding"
+    ],
+    correct: 0,
+    explanation: "Nudges work by altering the 'choice architecture'—making the preferred action the easiest, most frictionless option (e.g., auto-enrolling in benefits)."
+  },
+  {
+    category: "UX Design",
+    text: "Which design pattern acts as a high-friction barrier to prevent bots, but also increases friction for legitimate users?",
+    options: [
+      "Infinite scrolling",
+      "Skeleton screens",
+      "CAPTCHA validation",
+      "Floating Action Buttons"
+    ],
+    correct: 2,
+    explanation: "CAPTCHAs require active cognitive and manual effort, creating a high-friction gatekeeper that blocks automated spam but can frustrate human users."
+  },
+
+  // Economics (8-11)
+  {
+    category: "Economics",
+    text: "What does 'transaction friction' refer to in market economics?",
+    options: [
+      "The physical wear and tear of currency notes in circulation",
+      "The total cost (time, effort, fees) required to execute an exchange beyond the price of the good",
+      "The rate of inflation in a local economy",
+      "The regulatory limit on maximum interest rates"
+    ],
+    correct: 1,
+    explanation: "Transaction friction represents the overhead of trade—including finding buyers/sellers (search costs), drafting contracts, paying taxes, or navigating regulations."
+  },
+  {
+    category: "Economics",
+    text: "How does market friction affect the existence of monopolies?",
+    options: [
+      "High friction (e.g., switching costs) makes it easier for monopolies to lock in customers",
+      "High friction makes markets perfectly competitive",
+      "Monopolies are only possible in zero-friction markets",
+      "Friction has no impact on market competition"
+    ],
+    correct: 0,
+    explanation: "Friction, such as contract termination fees or incompatible data formats (switching costs), acts as a barrier that prevents customers from moving to competitors, sustaining monopolies."
+  },
+  {
+    category: "Economics",
+    text: "What is the consequence of a completely 'frictionless' labor market?",
+    options: [
+      "Employees would never leave their jobs",
+      "Extreme wage stability and zero job listings",
+      "Instantaneous hiring and firing with no hiring overhead, creating highly volatile job transitions",
+      "The total elimination of income taxes"
+    ],
+    correct: 2,
+    explanation: "Without hiring or firing friction (recruitment, training, severance, notice periods), companies and workers would adapt instantly, leading to highly volatile, hyper-frequent hiring cycles."
+  },
+  {
+    category: "Economics",
+    text: "How do digital payment platforms (like Apple Pay or Venmo) affect consumer spending habits?",
+    options: [
+      "They decrease spending by showing clear balances",
+      "They increase spending by reducing transaction friction (the 'pain of paying')",
+      "They have no impact on overall consumption volume",
+      "They increase savings by automating deposits"
+    ],
+    correct: 1,
+    explanation: "Physical cash transactions create a physical sensation of loss (pain of paying). Digital wallets make transactions single-click and effortless, reducing psychological friction and increasing impulse purchases."
+  },
+
+  // Psychology (12-15)
+  {
+    category: "Psychology",
+    text: "In psychology and behavioral science, what is 'cognitive friction'?",
+    options: [
+      "The mental effort required to process complex, unfamiliar, or counter-intuitive tasks",
+      "The physical fatigue after intense manual labor",
+      "The social conflict between different people in a group setting",
+      "The brain's natural response to warm temperatures"
+    ],
+    correct: 0,
+    explanation: "Cognitive friction occurs when the interface or process doesn't match the user's intuitive mental model, requiring conscious, effortful mental processing."
+  },
+  {
+    category: "Psychology",
+    text: "In behavioral economics, why is changing a program to 'opt-out' rather than 'opt-in' so effective?",
+    options: [
+      "Because opt-out plans offer higher financial returns",
+      "Because default options harness status quo bias by utilizing inertia as psychological friction against leaving",
+      "Because citizens are legally forced to stay enrolled in opt-out programs",
+      "Because opt-in forms are visually longer than opt-out forms"
+    ],
+    correct: 1,
+    explanation: "Humans tend to stick with the default state because changing it requires action and effort. Setting the desired action as the default leverages this psychological inertia."
+  },
+  {
+    category: "Psychology",
+    text: "What is 'habit loop friction'?",
+    options: [
+      "The time it takes to wake up in the morning",
+      "Introducing obstacles or delay steps to disrupt automatic, unwanted behavioral routines",
+      "The physical resistance of starting to exercise",
+      "Repeatedly checking emails during work hours"
+    ],
+    correct: 1,
+    explanation: "Adding small barriers to bad habits (like putting a lock on a phone or keeping snacks in the garage) introduces friction that breaks the automatic cue-routine-reward loop."
+  },
+  {
+    category: "Psychology",
+    text: "How does cognitive dissonance create psychological friction?",
+    options: [
+      "By making logical thinking faster",
+      "By producing mental discomfort when holding contradictory beliefs, prompting resistance to new information",
+      "By increasing visual focus on text fields",
+      "By causing physical headaches"
+    ],
+    correct: 1,
+    explanation: "Cognitive dissonance is the uncomfortable tension of holding conflicting ideas. To resolve this friction, people often discount, resist, or reject new evidence that contradicts their active beliefs."
+  },
+
+  // Machine Learning (16-19)
+  {
+    category: "Machine Learning",
+    text: "In machine learning, how does L2 regularization (weight decay) act as 'friction' for parameters?",
+    options: [
+      "It randomly zeros out the gradients during backpropagation",
+      "It adds a penalty to the loss function that pulls weights back towards zero, preventing overly large parameters",
+      "It stops the optimizer from running after a specific number of epochs",
+      "It increases the learning rate when gradients are small"
+    ],
+    correct: 1,
+    explanation: "Weight decay subtracts a small portion of the weight value at each update step (-λw), behaving like viscous drag that prevents weights from growing excessively and overfitting."
+  },
+  {
+    category: "Machine Learning",
+    text: "What is the result of choosing a learning rate that is too high (lacking 'optimizer friction') in gradient descent?",
+    options: [
+      "The model converges instantly to the global minimum",
+      "The parameters bounce chaotically across the loss landscape and fail to converge",
+      "The training stops automatically due to memory errors",
+      "The weights shrink to zero immediately"
+    ],
+    correct: 1,
+    explanation: "Without a speed cap or small enough step sizes, updates overshoot valley bottoms. The loss bounces chaotically and diverges rather than descending smoothly."
+  },
+  {
+    category: "Machine Learning",
+    text: "Which optimizer adapts the 'friction' (learning rate) per individual parameter, applying higher friction on steep terrains and lower friction on flat terrains?",
+    options: [
+      "Standard Stochastic Gradient Descent (SGD)",
+      "Momentum Optimizer",
+      "Adam Optimizer",
+      "RMSprop with constant step-size"
+    ],
+    correct: 2,
+    explanation: "Adam calculates adaptive learning rates for each parameter by keeping track of the first (mean) and second (uncentered variance) moments of the gradients, scaling step size per direction."
+  },
+  {
+    category: "Machine Learning",
+    text: "In deep networks, what is 'vanishing gradient' friction, and how do residual connections (ResNets) mitigate it?",
+    options: [
+      "Gradients become too large; ResNets add clipping",
+      "Gradients shrink exponentially in backprop; ResNets provide shortcut paths for unimpeded gradient flow",
+      "Gradients change signs; ResNets keep them positive",
+      "Neurons die; ResNets reset their activation levels"
+    ],
+    correct: 1,
+    explanation: "Multiplying fractional derivatives through many layers causes gradients to vanish, stalling learning. Skip/residual connections create a direct highway for gradients to flow back to early layers."
+  }
+];
+
+const domainNames = ["Physics", "UX Design", "Economics", "Psychology", "Machine Learning"];
+let currentQuestionIndex = 0;
+let userAnswers = Array(20).fill(null);
+let quizChart = null;
+
+function initQuiz() {
+  // Generate Navigation Grid Buttons
+  const navGrid = document.getElementById("quiz-nav-grid");
+  navGrid.innerHTML = "";
+  for (let i = 0; i < quizQuestions.length; i++) {
+    const btn = document.createElement("button");
+    btn.className = "quiz-nav-btn";
+    btn.textContent = i + 1;
+    btn.onclick = () => jumpToQuestion(i);
+    navGrid.appendChild(btn);
+  }
+
+  // Initialize Chart.js Radar
+  const ctx = document.getElementById('quizRadarChart').getContext('2d');
+  quizChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: domainNames,
+      datasets: [{
+        label: 'Domain Mastery %',
+        data: [0, 0, 0, 0, 0],
+        backgroundColor: 'rgba(200, 98, 42, 0.2)',
+        borderColor: '#C8622A',
+        borderWidth: 2,
+        pointBackgroundColor: '#C8622A',
+        pointBorderColor: '#141413',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#C8622A'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return context.label + ': ' + context.raw + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        r: {
+          angleLines: { color: '#2E2E2C' },
+          grid: { color: '#2E2E2C' },
+          pointLabels: {
+            color: '#7A7972',
+            font: { family: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', size: 9, weight: '500' }
+          },
+          ticks: {
+            display: false,
+            stepSize: 25
+          },
+          suggestedMin: 0,
+          suggestedMax: 100
+        }
+      }
+    }
+  });
+
+  renderQuestion(currentQuestionIndex);
+  updateStats();
+}
+
+function renderQuestion(index) {
+  currentQuestionIndex = index;
+  const q = quizQuestions[index];
+  const card = document.getElementById("question-card");
+  const indexLbl = document.getElementById("question-index-lbl");
+  
+  indexLbl.textContent = `Question ${index + 1} of ${quizQuestions.length}`;
+  
+  // Highlight the active navigation grid button
+  const navBtns = document.querySelectorAll(".quiz-nav-btn");
+  navBtns.forEach((btn, idx) => {
+    btn.classList.toggle("active", idx === index);
+  });
+
+  const isAnswered = userAnswers[index] !== null;
+  const selectedIdx = userAnswers[index];
+
+  let optionsHTML = "";
+  q.options.forEach((opt, optIdx) => {
+    let extraClass = "";
+    if (isAnswered) {
+      if (optIdx === q.correct) {
+        extraClass = "correct";
+      } else if (optIdx === selectedIdx) {
+        extraClass = "wrong";
+      }
+    } else if (selectedIdx === optIdx) {
+      extraClass = "selected";
+    }
+
+    const disabledAttr = isAnswered ? "disabled" : "";
+    optionsHTML += `
+      <button class="option-btn ${extraClass}" ${disabledAttr} onclick="selectOption(${index}, ${optIdx})">
+        <span style="font-weight: 600; color: var(--rust);">${String.fromCharCode(65 + optIdx)})</span>
+        <span>${opt}</span>
+      </button>
+    `;
+  });
+
+  const explanationHTML = isAnswered 
+    ? `<div class="explanation-box">
+         <strong>Explanation:</strong> ${q.explanation}
+       </div>`
+    : "";
+
+  card.innerHTML = `
+    <div>
+      <div class="question-category">${q.category}</div>
+      <div class="question-text">${q.text}</div>
+      <div class="options-list">
+        ${optionsHTML}
+      </div>
+    </div>
+    ${explanationHTML}
+  `;
+
+  // Update nav controls disabled states
+  document.getElementById("prev-btn").disabled = index === 0;
+  document.getElementById("next-btn").disabled = index === quizQuestions.length - 1;
+}
+
+function selectOption(qIndex, optIndex) {
+  if (userAnswers[qIndex] !== null) return; // Prevent re-answering
+  
+  userAnswers[qIndex] = optIndex;
+  
+  // Update nav grid button style immediately
+  const navBtns = document.querySelectorAll(".quiz-nav-btn");
+  const isCorrect = optIndex === quizQuestions[qIndex].correct;
+  if (isCorrect) {
+    navBtns[qIndex].classList.add("correct");
+  } else {
+    navBtns[qIndex].classList.add("wrong");
+  }
+
+  renderQuestion(qIndex);
+  updateStats();
+}
+
+function jumpToQuestion(index) {
+  renderQuestion(index);
+}
+
+function nextQuestion() {
+  if (currentQuestionIndex < quizQuestions.length - 1) {
+    renderQuestion(currentQuestionIndex + 1);
+  }
+}
+
+function prevQuestion() {
+  if (currentQuestionIndex > 0) {
+    renderQuestion(currentQuestionIndex - 1);
+  }
+}
+
+function updateStats() {
+  let answeredCount = 0;
+  let correctCount = 0;
+  
+  // Track stats per domain: Physics, UX, Economics, Psychology, ML
+  // 4 questions per domain in order
+  const domainCorrect = [0, 0, 0, 0, 0];
+  
+  userAnswers.forEach((ans, idx) => {
+    if (ans !== null) {
+      answeredCount++;
+      const isCorrect = ans === quizQuestions[idx].correct;
+      if (isCorrect) {
+        correctCount++;
+        const domainIdx = Math.floor(idx / 4);
+        domainCorrect[domainIdx]++;
+      }
+    }
+  });
+
+  // Calculate scores
+  const scorePercent = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+  
+  // Update HTML elements
+  document.getElementById("quiz-progress").textContent = `${answeredCount}/${quizQuestions.length} Answered`;
+  document.getElementById("quiz-score").textContent = `${correctCount}/${answeredCount} (${scorePercent}%)`;
+  
+  const progressPercent = Math.round((answeredCount / quizQuestions.length) * 100);
+  document.getElementById("quiz-progress-bar").style.width = `${progressPercent}%`;
+
+  // Update Radar Chart data (max score per category is 4)
+  if (quizChart) {
+    const domainPercentages = domainCorrect.map(count => Math.round((count / 4) * 100));
+    quizChart.data.datasets[0].data = domainPercentages;
+    quizChart.update();
+  }
+
+  // Update Feedback Badge & Description
+  const badgeEl = document.getElementById("feedback-badge");
+  const descEl = document.getElementById("feedback-desc");
+
+  if (answeredCount === 0) {
+    badgeEl.textContent = "Uninitiated";
+    badgeEl.style.background = "rgba(122,121,114,0.15)";
+    badgeEl.style.color = "var(--muted)";
+    descEl.textContent = "Answer questions to assess your mastery across friction domains.";
+  } else {
+    // Grade based on correct count
+    if (correctCount <= 4) {
+      badgeEl.textContent = "Uninitiated";
+      badgeEl.style.background = "rgba(226, 75, 74, 0.15)";
+      badgeEl.style.color = "var(--red)";
+      descEl.textContent = "You are just beginning to study the friction forces of our world. Answer more to build your understanding.";
+    } else if (correctCount <= 9) {
+      badgeEl.textContent = "Friction Apprentice";
+      badgeEl.style.background = "rgba(186, 117, 23, 0.15)";
+      badgeEl.style.color = "var(--amber)";
+      descEl.textContent = "You understand the basics of physical and UX friction. Keep going to explore economic and psychological resistance!";
+    } else if (correctCount <= 14) {
+      badgeEl.textContent = "Cohesion Specialist";
+      badgeEl.style.background = "rgba(55, 138, 221, 0.15)";
+      badgeEl.style.color = "var(--blue)";
+      descEl.textContent = "Great job! You have solid knowledge across multiple domains, including optimization and transaction costs.";
+    } else if (correctCount <= 18) {
+      badgeEl.textContent = "Friction Engineer";
+      badgeEl.style.background = "rgba(200, 98, 42, 0.15)";
+      badgeEl.style.color = "var(--rust)";
+      descEl.textContent = "Outstanding! You can manipulate regularization, UX loops, and physical coefficients with ease.";
+    } else {
+      badgeEl.textContent = "Entropy Master";
+      badgeEl.style.background = "rgba(29, 158, 117, 0.15)";
+      badgeEl.style.color = "var(--green)";
+      descEl.textContent = "Master of drag and momentum! You have conquered all 5 domains of friction perfectly. The universe moves exactly as you design.";
+    }
+  }
+}
+
+function resetQuiz() {
+  userAnswers = Array(20).fill(null);
+  currentQuestionIndex = 0;
+  
+  // Reset nav grid classes
+  const navBtns = document.querySelectorAll(".quiz-nav-btn");
+  navBtns.forEach(btn => {
+    btn.className = "quiz-nav-btn";
+  });
+  
+  renderQuestion(currentQuestionIndex);
+  updateStats();
+}
+
+// Initialize on page load
+initQuiz();
 </script>
 </body>
 </html>
