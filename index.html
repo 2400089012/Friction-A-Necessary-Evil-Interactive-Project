@@ -133,6 +133,43 @@
   .meta-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted2); }
   .meta-val { font-size: 20px; font-weight: 500; color: var(--bone); }
 
+  /* Hero Banner Layout */
+  .hero-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .hero-banner-wrap {
+    border-radius: 24px;
+    overflow: hidden;
+    border: 3px solid var(--border);
+    box-shadow: 0 12px 32px rgba(140, 160, 185, 0.25);
+    opacity: 0;
+    transform: scale(0.95);
+    animation: bannerFadeIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+  }
+  .hero-banner-wrap img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.5s ease;
+  }
+  .hero-banner-wrap:hover img {
+    transform: scale(1.03);
+  }
+
+  @keyframes bannerFadeIn {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @media (max-width: 800px) {
+    .hero-layout {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+
   /* Keyframe Animations */
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -619,14 +656,21 @@
 
 <!-- HERO -->
 <header class="hero">
-  <div class="eyebrow">A conceptual project</div>
-  <h1 class="hero-title">FRICTION<br><span>— A NECESSARY</span><br>EVIL</h1>
-  <p class="hero-subtitle">The force that slows everything down. The resistance that makes anything possible. An exploration across physics, design, economics, psychology — and machine learning.</p>
-  <div class="hero-meta">
-    <div class="meta-item"><span class="meta-label">Domains</span><span class="meta-val">5</span></div>
-    <div class="meta-item"><span class="meta-label">Type</span><span class="meta-val">Interactive</span></div>
-    <div class="meta-item"><span class="meta-label">Formula</span><span class="meta-val" style="font-size:15px;margin-top:3px;">f = μ · N</span></div>
-    <div class="meta-item"><span class="meta-label">ML formula</span><span class="meta-val" style="font-size:15px;margin-top:3px;">w ← w − α∇L − λw</span></div>
+  <div class="hero-layout">
+    <div class="hero-text-content">
+      <div class="eyebrow">A conceptual project</div>
+      <h1 class="hero-title">FRICTION<br><span>— A NECESSARY</span><br>EVIL</h1>
+      <p class="hero-subtitle">The force that slows everything down. The resistance that makes anything possible. An exploration across physics, design, economics, psychology — and machine learning.</p>
+      <div class="hero-meta">
+        <div class="meta-item"><span class="meta-label">Domains</span><span class="meta-val">5</span></div>
+        <div class="meta-item"><span class="meta-label">Type</span><span class="meta-val">Interactive</span></div>
+        <div class="meta-item"><span class="meta-label">Formula</span><span class="meta-val" style="font-size:15px;margin-top:3px;">f = μ · N</span></div>
+        <div class="meta-item"><span class="meta-label">ML formula</span><span class="meta-val" style="font-size:15px;margin-top:3px;">w ← w − α∇L − λw</span></div>
+      </div>
+    </div>
+    <div class="hero-banner-wrap">
+      <img src="friction_banner.png" alt="Playful 3D Cartoon Friction Illustration">
+    </div>
   </div>
 </header>
 
